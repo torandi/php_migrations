@@ -133,7 +133,9 @@ function run_migration($version, $filename) {
  */
 function migration_applied($version) {
 	global $db;
-	$stmt = $db->prepare_full("SELECT 1 FROM `schema_migrations` WHERE `version` = '$version'");
+	$stmt = $db->prepare("SELECT 1 FROM `schema_migrations` WHERE `version` = ?");
+	$stmt->bind_param('s', $version);
+	$stmt->execute();
 	$res = $stmt->fetch();
 	$stmt->close();
 	return $res;
