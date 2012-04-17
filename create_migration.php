@@ -8,6 +8,7 @@
 				die("Unknown extention $ext\n");
 			}
 		}
+		date_default_timezone_set("Europe/Stockholm");
 		$filename=date("YmdHis")."_".$argv[1].".$ext";
 		$f = fopen(dirname(__FILE__) . "/$filename",'w');
 		if($ext == "php") {

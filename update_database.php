@@ -3,7 +3,7 @@
 include dirname(__FILE__) . "/../includes.php";
 include "color_terminal.php";
 
-$ignored_files = array("update_database.php", "create_migration.php", "README.txt");
+$ignored_files = array("update_database.php", "create_migration.php", "README.txt", "color_terminal.php");
 
 if(isset($argv[1])) {
 	$username = $argv[1];
@@ -133,7 +133,9 @@ function run_migration($version, $filename) {
  */
 function migration_applied($version) {
 	global $db;
-	$stmt = $db->prepare_full("SELECT 1 FROM `schema_migrations` WHERE `version` = '$version'");
+	$stmt = $db->prepare("SELECT 1 FROM `schema_migrations` WHERE `version` = ?");
+	$stmt->bind_param('s', $version);
+	$stmt->execute();
 	$res = $stmt->fetch();
 	$stmt->close();
 	return $res;
