@@ -5,7 +5,18 @@ include "color_terminal.php";
 
 $ignored_files = array("update_database.php", "create_migration.php", "README.txt", "color_terminal.php");
 
+function usage() {
+	global $argv;
+	echo "Usage: ".$argv[0]." <username> <password>\n";
+	echo "Username and password are optional. If not specified, I will try to run the\n";
+	echo "migrations as the user in the database settings file.\n";
+	die();
+}
+
 if(isset($argv[1])) {
+	if($argv[1] == "--help" || $argv[1] == '-h') {
+		usage();
+	}
 	$username = $argv[1];
 	echo "Password: ";
 	system('stty -echo');
