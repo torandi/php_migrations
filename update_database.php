@@ -19,6 +19,8 @@ if(isset($argv[1])) {
 	}
 	$username = $argv[1];
 	echo "Password: ";
+	ob_flush();
+	flush();
 	system('stty -echo');
 	$password = trim(fgets(STDIN));
 	system('stty echo');
@@ -32,7 +34,7 @@ unset($db);
 try {
 	$db = new UltimateDatabaseConnection('i_want_exceptions_please_kthxbai', $username, $password);
 } catch(Exception $e) {
-	die("Misslyckades med att ansluta till databasen. Felmeddelande: ".$e->getMessage());
+	die("Misslyckades med att ansluta till databasen. Felmeddelande: ".$e->getMessage()."\n");
 }
 
 create_migration_table_if_not_exists();
