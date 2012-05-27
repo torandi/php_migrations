@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Helper functions for outputing color in terminals
  */
