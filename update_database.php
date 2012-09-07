@@ -1,18 +1,24 @@
 #!/usr/bin/php
 <?php
+require "color_terminal.php";
 
-include "color_terminal.php";
+$ignored_files = array("update_database.php", "create_migration.php", "README.txt", "color_terminal.php", "config.php", "config-example.php");
 
-include "config.php";
-
-$ignored_files = array("update_database.php", "create_migration.php", "README.txt", "color_terminal.php");
+if(file_exists("config.php")) {
+	require "config.php";
+} else {
+	die("Please create config.php. You can look at config-example.php for ideas.\n");
+}
 
 function usage() {
 	global $argv;
-	echo "Usage: ".$argv[0]." <username> <password>\n";
-	echo "Username and password are optional. If not specified, I will try to run the\n";
-	echo "migrations as the user in the database settings file.\n";
+	echo "Usage: ".$argv[0]." <username>\n";
+	echo "Username my be optional, depending on your config file.\n";
 	die();
+}
+
+if($argc > 2) {
+	usage();
 }
 
 if(isset($argv[1])) {
@@ -20,6 +26,11 @@ if(isset($argv[1])) {
 		usage();
 	}
 	$username = $argv[1];
+} else {
+	$username = null;
+}
+
+function ask_for_password() {
 	echo "Password: ";
 	ob_flush();
 	flush();
@@ -27,20 +38,16 @@ if(isset($argv[1])) {
 	$password = trim(fgets(STDIN));
 	system('stty echo');
 	echo "\n";
-} else {
-	$username = null;
-	$password = null;
+	return $password;
 }
 
-unset($db);
 try {
-	$db = new UltimateDatabaseConnection('i_want_exceptions_please_kthxbai', $username, $password);
+	$db = Config::fix_database($username);
 } catch(Exception $e) {
-	die("Misslyckades med att ansluta till databasen. Felmeddelande: ".$e->getMessage()."\n");
+	die("fix_database misslyckades. Exception: ".$e->getMessage()."\n");
 }
 
 create_migration_table_if_not_exists();
-
 
 $db->autocommit(FALSE);
 foreach(migration_list() as $version => $file) {
@@ -58,8 +65,8 @@ $db->close();
  * Creates a hash :migration_version => file_name
  */
 function migration_list() {
-	global $repo_root, $ignored_files;
-	$dir = opendir($repo_root."/migrations");
+	global $ignored_files;
+	$dir = opendir(dirname(__FILE__));
 	$files = array();
 	while($f = readdir()) {
 		if($f[0] != "." && ! in_array($f,$ignored_files)) {
@@ -79,13 +86,13 @@ function get_version($file) {
  * Runs the migration
  */
 function run_migration($version, $filename) {
-	global $db, $repo_root;
+	global $db;
 	try {
 		$ext = end(explode('.', $filename));
 		ColorTerminal::set("blue");
 		echo "============= BEGIN $filename =============\n";
 		ColorTerminal::set("normal");
-		if(filesize("$repo_root/migrations/$filename") == 0) {
+		if(filesize(dirname(__FILE__)."/$filename") == 0) {
 			ColorTerminal::set("red");
 			echo "$filename is empty. Migrations aborted\n";
 			ColorTerminal::set("normal");
@@ -95,12 +102,12 @@ function run_migration($version, $filename) {
 			case "php":
 				echo "Parser: PHP\n";
 				{
-					require "$repo_root/migrations/$filename";
+					require dirname(__FILE__)."/$filename";
 				}
 				break;
 			case "sql":
 				echo "Parser: MySQL\n";
-				$queries = preg_split("/;[[:space:]]*\n/",file_contents("$repo_root/migrations/$filename"));
+				$queries = preg_split("/;[[:space:]]*\n/",file_contents(dirname(__FILE__)."/$filename"));
 				foreach($queries as $q) {
 					$q = trim($q);
 					if($q != "") {
