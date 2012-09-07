@@ -1,7 +1,9 @@
 #!/usr/bin/php
 <?php
-include dirname(__FILE__) . "/../includes.php";
+
 include "color_terminal.php";
+
+include "config.php";
 
 $ignored_files = array("update_database.php", "create_migration.php", "README.txt", "color_terminal.php");
 
