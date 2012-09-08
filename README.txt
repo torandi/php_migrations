@@ -1,6 +1,7 @@
 This code was written for another project and depends rather heavily on that codebase, but I leave the code here since it should be rather easy to integrate it in another project.
 
-Start by creating a config.php in which you include anything you need to get the system to work
+Start by creating a config.php in which you include anything you need to get the system to work,
+and implement Config::fix_database(). Have a look at config-example.php.
 
 I den här mappen placeras migrations
 Migrations hanteras av scripten update_database.php och create_migration.php.
