@@ -82,6 +82,18 @@ function get_version($file) {
 	return $file;
 }
 
+function manual_step_confirm() {
+	$ans = '';
+	while($ans != 'yes') {
+		echo("Please type 'yes' to manual_step_confirm you have completed the step above, or quit with ctrl+c: ");
+		flush();
+		$ans = trim(fgets(STDIN));
+		echo("\n");
+		flush();
+	}
+}
+
+
 /**
  * Runs the migration
  */
