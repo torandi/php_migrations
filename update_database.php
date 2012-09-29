@@ -100,7 +100,7 @@ function manual_step_confirm() {
 function run_migration($version, $filename) {
 	global $db;
 	try {
-		$ext = end(explode('.', $filename));
+		$ext = pathinfo($filename,  PATHINFO_EXTENSION);
 		ColorTerminal::set("blue");
 		echo "============= BEGIN $filename =============\n";
 		ColorTerminal::set("normal");
