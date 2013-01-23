@@ -2,10 +2,15 @@
 <?php
 require "color_terminal.php";
 
+$file_dir = realpath(dirname($_SERVER['SCRIPT_FILENAME']));
+
 $ignored_files = array("update_database.php", "create_migration.php", "README.txt", "color_terminal.php", "config.php", "config-example.php");
 
-if(file_exists("config.php")) {
-	require "config.php";
+if(file_exists("$file_dir/config.php")) {
+	require "$file_dir/config.php";
+} else if(file_exists(dirname(__FILE__)."/config.php")) {
+	$file_dir = dirname(__FILE__);
+	require "$file_dir/config.php";
 } else {
 	die("Please create config.php. You can look at config-example.php for ideas.\n");
 }
@@ -32,7 +37,6 @@ if(isset($argv[1])) {
 
 function ask_for_password() {
 	echo "Password: ";
-	ob_flush();
 	flush();
 	system('stty -echo');
 	$password = trim(fgets(STDIN));
@@ -65,8 +69,8 @@ $db->close();
  * Creates a hash :migration_version => file_name
  */
 function migration_list() {
-	global $ignored_files;
-	$dir = opendir(dirname(__FILE__));
+	global $ignored_files, $file_dir;
+	$dir = opendir($file_dir);
 	$files = array();
 	while($f = readdir()) {
 		if($f[0] != "." && ! in_array($f,$ignored_files)) {
@@ -98,13 +102,13 @@ function manual_step_confirm() {
  * Runs the migration
  */
 function run_migration($version, $filename) {
-	global $db;
+	global $db, $file_dir;
 	try {
 		$ext = pathinfo($filename,  PATHINFO_EXTENSION);
 		ColorTerminal::set("blue");
 		echo "============= BEGIN $filename =============\n";
 		ColorTerminal::set("normal");
-		if(filesize(dirname(__FILE__)."/$filename") == 0) {
+		if(filesize("$file_dir/$filename") == 0) {
 			ColorTerminal::set("red");
 			echo "$filename is empty. Migrations aborted\n";
 			ColorTerminal::set("normal");
@@ -114,12 +118,12 @@ function run_migration($version, $filename) {
 			case "php":
 				echo "Parser: PHP\n";
 				{
-					require dirname(__FILE__)."/$filename";
+					require "$file_dir/$filename";
 				}
 				break;
 			case "sql":
 				echo "Parser: MySQL\n";
-				$queries = preg_split("/;[[:space:]]*\n/",file_contents(dirname(__FILE__)."/$filename"));
+				$queries = preg_split("/;[[:space:]]*\n/",file_contents("$file_dir/$filename"));
 				foreach($queries as $q) {
 					$q = trim($q);
 					if($q != "") {
