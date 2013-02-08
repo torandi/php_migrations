@@ -216,7 +216,7 @@ function create_migration_table_if_not_exists() {
 		`version` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
 		`timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		UNIQUE KEY `unique_schema_migrations` (`version`)
-		)");
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci; ");
 }
 
 class QueryException extends Exception{
