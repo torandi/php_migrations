@@ -15,7 +15,6 @@ if(file_exists("$file_dir/config.php")) {
 
 $ignored_files = array(
 	'^\..*',                        /* skip hidden files */
-	'.+~$',                         /* emacs temp-files */
 	'(?<!\.(php|sql))$',            /* everything not .php or .sql */
 	'^(update_database|create_migration|config(-example)?|color_terminal)\.php$',
 );
