@@ -20,6 +20,11 @@ $ignored_files = array(
 	'^(update_database|create_migration|config(-sample)?|color_terminal)\.php$',
 );
 
+/* append project-wide ignores */
+if ( is_callable(array('Config', 'ignored')) ){
+	$ignored_files = array_merge($ignored_files, Config::ignored());
+}
+
 function usage() {
 	global $argv;
 	echo "Usage: ".$argv[0]." <username>\n";

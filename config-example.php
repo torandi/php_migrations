@@ -34,4 +34,11 @@ class Config {
 		$db = new MySQLi(self::$db_host, $username, $password, self::$db_name);
 		return $db;
 	}
+
+	/**
+	 * Return an array of RE patterns of files to ignore.
+	 */
+	public static function ignored(){
+		return array();
+	}
 }
