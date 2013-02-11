@@ -4,8 +4,6 @@ require "color_terminal.php";
 
 $file_dir = realpath(dirname($_SERVER['SCRIPT_FILENAME']));
 
-$ignored_files = array("update_database.php", "create_migration.php", "README.txt", "color_terminal.php", "config.php", "config-example.php");
-
 if(file_exists("$file_dir/config.php")) {
 	require "$file_dir/config.php";
 } else if(file_exists(dirname(__FILE__)."/config.php")) {
@@ -14,6 +12,13 @@ if(file_exists("$file_dir/config.php")) {
 } else {
 	die("Please create config.php. You can look at config-example.php for ideas.\n");
 }
+
+$ignored_files = array(
+	'^\..*',                        /* skip hidden files */
+	'.+~$',                         /* emacs temp-files */
+	'(?<!\.(php|sql))$',            /* everything not .php or .sql */
+	'^(update_database|create_migration|config(-sample)?|color_terminal)\.php$',
+);
 
 function usage() {
 	global $argv;
@@ -65,17 +70,31 @@ ColorTerminal::set("normal");
 
 $db->close();
 
+function is_ignored($filename, &$match){
+	global $ignored_files;
+
+	/* skip files in ignore list */
+	foreach ( $ignored_files as $pattern ){
+		if ( preg_match("/$pattern/", $filename) ){
+			$match = $pattern;
+			return true;
+		}
+	}
+
+	return false;
+}
+
 /**
  * Creates a hash :migration_version => file_name
  */
 function migration_list() {
-	global $ignored_files, $file_dir;
+	global $file_dir;
 	$dir = opendir($file_dir);
 	$files = array();
 	while($f = readdir()) {
-		if($f[0] != "." && ! in_array($f,$ignored_files)) {
-			$files[get_version($f)] = $f;
-		}
+		if ( is_ignored($f, $match) ) continue;
+
+		$files[get_version($f)] = $f;
 	}
 	ksort($files);
 	closedir($dir);
@@ -166,7 +185,7 @@ function run_migration($version, $filename) {
 	}
 }
 
-/** 
+/**
  * Returns true if the specified version is applied
  */
 function migration_applied($version) {
