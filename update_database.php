@@ -246,11 +246,12 @@ function file_contents($filename) {
 }
 
 function run_hook($hook, $arg = null) {
-	if ( is_callable(array('Config', $hook)) ){
+	$hook_method = $hook . "_hook";
+	if ( is_callable(array('Config', $hook_method)) ){
 		if($arg == null) {
-			call_user_func("Config::" . $hook . "_hook");
+			call_user_func("Config::" . $hook_method);
 		} else {
-			call_user_func("Config::" . $hook . "_hook", $arg);
+			call_user_func("Config::" . $hook_method);
 		}
 	}
 }
