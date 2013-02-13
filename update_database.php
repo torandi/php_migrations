@@ -251,7 +251,7 @@ function run_hook($hook, $arg = null) {
 		if($arg == null) {
 			call_user_func("Config::" . $hook_method);
 		} else {
-			call_user_func("Config::" . $hook_method);
+			call_user_func("Config::" . $hook_method, $arg);
 		}
 	}
 }
