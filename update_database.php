@@ -63,14 +63,21 @@ try {
 create_migration_table_if_not_exists();
 
 $db->autocommit(FALSE);
+
+run_hook("begin");
+
 foreach(migration_list() as $version => $file) {
 	if(!migration_applied($version)) {
 		run_migration($version,$file);
 	}
 }
+
 ColorTerminal::set("green");
 echo "All migrations completed\n";
 ColorTerminal::set("normal");
+
+run_hook("end");
+
 
 $db->close();
 
@@ -128,6 +135,9 @@ function run_migration($version, $filename) {
 	global $db, $file_dir;
 	try {
 		$ext = pathinfo($filename,  PATHINFO_EXTENSION);
+
+		run_hook("pre_migration", $filename);
+
 		ColorTerminal::set("blue");
 		echo "============= BEGIN $filename =============\n";
 		ColorTerminal::set("normal");
@@ -173,6 +183,8 @@ function run_migration($version, $filename) {
 		echo "============= END $filename =============\n";
 		ColorTerminal::set("normal");
 
+		run_hook("post_migration", $filename);
+
 	} catch (Exception $e) {
 		ColorTerminal::set("red");
 		if($e instanceof QueryException) {
@@ -185,6 +197,9 @@ function run_migration($version, $filename) {
 		$db->rollback();
 		echo "All following migrations aborted\n";
 		ColorTerminal::set("normal");
+
+		run_hook("post_rollback", $filename);
+
 		exit;
 	}
 }
@@ -228,6 +243,16 @@ function file_contents($filename) {
 	$contents = fread($handle, filesize($filename));
 	fclose($handle);
 	return $contents;
+}
+
+function run_hook($hook, $arg = null) {
+	if ( is_callable(array('Config', $hook)) ){
+		if($arg == null) {
+			call_user_func("Config::" . $hook . "_hook");
+		} else {
+			call_user_func("Config::" . $hook . "_hook", $arg);
+		}
+	}
 }
 
 /**

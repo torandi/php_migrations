@@ -41,4 +41,48 @@ class Config {
 	public static function ignored(){
 		return array();
 	}
+
+	/*
+	 * These hooks are called in different stages of the update_migration execution:
+	 */
+
+	/**
+	 * Called before any migrations are run, but after database initialization
+	 */
+	public static function begin_hook() {
+
+	}
+
+	/**
+	 * Called after all migrations are completed
+	 */
+	public static function end_hook() {
+
+	}
+
+	/**
+	 * Called before each migration are run
+	 * @param $migration_name The name of the migration to be run
+	 */
+	public static function pre_migration_hook($migration_name) {
+
+	}
+
+	/**
+	 * Called after each migration have succeded
+	 * @param $migration_name The name of the migration that succeded
+	 */
+	public static function post_migration_hook($migration_name) {
+
+	}
+	/*
+	 * Called after a migration rollback has occurred, just before exit()
+	 * @param $migration_name The name of the migration that caused the rollback
+	 */
+
+	public static function post_rollback_hook($migration_name) {
+
+	}
+
+
 }
