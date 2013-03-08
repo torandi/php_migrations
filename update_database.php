@@ -2,7 +2,7 @@
 <?php
 require "color_terminal.php";
 
-$file_dir = realpath(dirname($_SERVER['SCRIPT_FILENAME']));
+$file_dir = realpath(dirname($argv[0]));
 
 if(file_exists("$file_dir/config.php")) {
 	require "$file_dir/config.php";
