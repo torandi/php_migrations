@@ -10,7 +10,7 @@
 		}
 		date_default_timezone_set("Europe/Stockholm");
 		$filename=date("YmdHis")."_".$argv[1].".$ext";
-		$f = fopen(dirname(__FILE__) . "/$filename",'w');
+		$f = fopen(dirname($argv[0]) . "/$filename",'w');
 		if($ext == "php") {
 			fwrite($f, "<?php
 /*
@@ -20,7 +20,7 @@
 ?>");
 		}
 		fclose($f);
-		echo "Created migration ".dirname(__FILE__)."/$filename\n";
+		echo "Created migration ".dirname($argv[0])."/$filename\n";
 	} else {
 		echo "Usage: ./create_migration name [*sql|php]\n";
 	}
