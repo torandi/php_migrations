@@ -26,8 +26,11 @@ if ( is_callable(array('Config', 'ignored')) ){
 
 function usage() {
 	global $argv;
-	echo "Usage: ".$argv[0]." <username>\n";
-	echo "Username my be optional, depending on your config file.\n";
+	echo "Usage: ".$argv[0]." [options] <username>\n";
+	echo "Username may be optional, depending on your config file.\n";
+	echo "Options:\n";
+	echo "\t --check (-c): Checks if there are migrations to run, won't run any migrations.\n";
+	echo "\t --help (-h): Show this text.\n";
 	die();
 }
 
@@ -35,13 +38,20 @@ if($argc > 2) {
 	usage();
 }
 
+$check_only = false; /* True if we should only check if there are migrations to run */
+$username = null;
+
 if(isset($argv[1])) {
 	if($argv[1] == "--help" || $argv[1] == '-h') {
 		usage();
+	} else if($argv[1] == "--check" || $argv[1] == '-c') {
+		$check_only = true;
+		if(isset($argv[2])) {
+			$username = $argv[2];
+		}
+	} else {
+		$username = $argv[1];
 	}
-	$username = $argv[1];
-} else {
-	$username = null;
 }
 
 function ask_for_password() {
@@ -61,6 +71,20 @@ try {
 }
 
 create_migration_table_if_not_exists();
+
+if($check_only) {
+	$count = 0;
+	foreach(migration_list() as $version => $file) {
+		if(!migration_applied($version)) ++$count;
+	}
+
+	if($count > 0) {
+		echo "There are $count new migration(s) to run\n";
+	} else {
+		echo "Database up-to-date\n";
+	}
+	exit($count);
+}
 
 $db->autocommit(FALSE);
 
