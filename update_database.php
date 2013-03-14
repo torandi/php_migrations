@@ -70,8 +70,6 @@ try {
 	die("fix_database misslyckades. Exception: ".$e->getMessage()."\n");
 }
 
-create_migration_table_if_not_exists();
-
 if($check_only) {
 	$count = 0;
 	foreach(migration_list() as $version => $file) {
@@ -85,6 +83,8 @@ if($check_only) {
 	}
 	exit($count);
 }
+
+create_migration_table_if_not_exists();
 
 $db->autocommit(FALSE);
 
