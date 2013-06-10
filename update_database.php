@@ -56,6 +56,7 @@ if(isset($argv[1])) {
 
 function ask_for_password() {
 	echo "Password: ";
+	ob_flush();
 	flush();
 	system('stty -echo');
 	$password = trim(fgets(STDIN));
