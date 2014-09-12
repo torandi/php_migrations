@@ -124,16 +124,24 @@ function is_ignored($filename, &$match){
  * Creates a hash :migration_version => file_name
  */
 function migration_list() {
-	global $file_dir;
-	$dir = opendir($file_dir);
 	$files = array();
-	while($f = readdir()) {
-		if ( is_ignored($f, $match) ) continue;
 
-		$files[get_version($f)] = $f;
+	global $file_dir;
+	$search_dir = array($file_dir);
+	if ( is_callable(array('Config', 'search_directory')) ){
+		$search_dir = Config::search_directory();
 	}
+
+	foreach ( $search_dir as $dir ){
+		$dir = opendir($dir);
+		while($f = readdir()) {
+			if ( is_ignored($f, $match) ) continue;
+			$files[get_version($f)] = $f;
+		}
+		closedir($dir);
+	}
+
 	ksort($files);
-	closedir($dir);
 	return $files;
 }
 
