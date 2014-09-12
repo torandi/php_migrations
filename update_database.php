@@ -20,8 +20,8 @@ $ignored_files = array(
 );
 
 /* append project-wide ignores */
-if ( is_callable(array('Config', 'ignored')) ){
-	$ignored_files = array_merge($ignored_files, Config::ignored());
+if ( is_callable(array('MigrationConfig', 'ignored')) ){
+	$ignored_files = array_merge($ignored_files, MigrationConfig::ignored());
 }
 
 function usage() {
@@ -66,7 +66,7 @@ function ask_for_password() {
 }
 
 try {
-	$db = Config::fix_database($username);
+	$db = MigrationConfig::fix_database($username);
 } catch(Exception $e) {
 	die("fix_database misslyckades. Exception: ".$e->getMessage()."\n");
 }
@@ -128,8 +128,8 @@ function migration_list() {
 
 	global $file_dir;
 	$search_dir = array($file_dir);
-	if ( is_callable(array('Config', 'search_directory')) ){
-		$search_dir = Config::search_directory();
+	if ( is_callable(array('MigrationConfig', 'search_directory')) ){
+		$search_dir = MigrationConfig::search_directory();
 	}
 
 	foreach ( $search_dir as $dir ){
@@ -280,11 +280,11 @@ function file_contents($filename) {
 
 function run_hook($hook, $arg = null) {
 	$hook_method = $hook . "_hook";
-	if ( is_callable(array('Config', $hook_method)) ){
+	if ( is_callable(array('MigrationConfig', $hook_method)) ){
 		if($arg == null) {
-			call_user_func("Config::" . $hook_method);
+			call_user_func("MigrationConfig::" . $hook_method);
 		} else {
-			call_user_func("Config::" . $hook_method, $arg);
+			call_user_func("MigrationConfig::" . $hook_method, $arg);
 		}
 	}
 }
