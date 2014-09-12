@@ -35,5 +35,6 @@ update_database.php usage
 Username may be optional, depending on your config.php
 
 ### Arguments
---help (-h): Show help
---check (-c): Checks if there are any migrations to run, but does not run them (dry run)
+
+    --help,  -h: Show help
+    --check, -c: Checks if there are any migrations to run, but does not run them (dry run)
