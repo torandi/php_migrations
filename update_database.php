@@ -132,11 +132,11 @@ function migration_list() {
 		$search_dir = MigrationConfig::search_directory();
 	}
 
-	foreach ( $search_dir as $dir ){
-		$dir = opendir($dir);
+	foreach ( $search_dir as $path ){
+		$dir = opendir($path);
 		while($f = readdir()) {
 			if ( is_ignored($f, $match) ) continue;
-			$files[get_version($f)] = $f;
+			$files[get_version($f)] = "$path/$f";
 		}
 		closedir($dir);
 	}
@@ -165,7 +165,7 @@ function manual_step_confirm() {
  * Runs the migration
  */
 function run_migration($version, $filename) {
-	global $db, $file_dir;
+	global $db;
 	try {
 		$ext = pathinfo($filename,  PATHINFO_EXTENSION);
 
@@ -174,7 +174,7 @@ function run_migration($version, $filename) {
 		ColorTerminal::set("blue");
 		echo "============= BEGIN $filename =============\n";
 		ColorTerminal::set("normal");
-		if(filesize("$file_dir/$filename") == 0) {
+		if(filesize($filename) == 0) {
 			ColorTerminal::set("red");
 			echo "$filename is empty. Migrations aborted\n";
 			ColorTerminal::set("normal");
@@ -184,12 +184,12 @@ function run_migration($version, $filename) {
 			case "php":
 				echo "Parser: PHP\n";
 				{
-					require "$file_dir/$filename";
+					require $filename;
 				}
 				break;
 			case "sql":
 				echo "Parser: MySQL\n";
-				$queries = preg_split("/;[[:space:]]*\n/",file_contents("$file_dir/$filename"));
+				$queries = preg_split("/;[[:space:]]*\n/",file_contents($filename));
 				foreach($queries as $q) {
 					$q = trim($q);
 					if($q != "") {
