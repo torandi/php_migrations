@@ -42,6 +42,14 @@ class Config {
 		return array();
 	}
 
+	/**
+	 * Return array of directories to search for migrations.
+	 */
+	public static function search_directory(){
+		global $file_dir; /* global used by update_database to locate config.php, effectively looking in the same directory */
+		return array($file_dir);
+	}
+
 	/*
 	 * These hooks are called in different stages of the update_migration execution:
 	 */
