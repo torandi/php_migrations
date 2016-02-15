@@ -4,9 +4,9 @@ This is a php-script that helps you handling versions of your database in a form
 
 Configuration and setup
 =============
-1. Either check this out as a subrepo or just paste the files into your project.
+1. composer require torandi/php-migrations
 1. Create a directory in your project named "migrations" (or whatever)
-1. Put the scripts (update_database.php and create_migration.php) in the directory, either directly or with symlinks.
+1. Symlink update_database.php and create_migration.php into the directory.
 1. Copy config-example.php to config.php and edit it to fit your project (see config-example.php for more info)
 
 Usage
