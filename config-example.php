@@ -15,7 +15,7 @@
 
 // require "/path/to/relevant/includes.php";
 
-class Config {
+class MigrationConfig {
 	private static $db_host = "127.0.0.1";
 	private static $db_name = "mushrooms_and_tomatoes";
 	private static $db_user = "mushroom_eater";
