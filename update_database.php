@@ -243,6 +243,10 @@ function run_migration($version, $filename) {
 function migration_applied($version) {
 	global $db;
 	$stmt = $db->prepare("SELECT 1 FROM `schema_migrations` WHERE `version` = ?");
+	if ( $stmt === false ){
+		echo "{$db->error}\n";
+		exit(1);
+	}
 	$stmt->bind_param('s', $version);
 	$stmt->execute();
 	$res = $stmt->fetch();
