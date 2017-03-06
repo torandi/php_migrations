@@ -82,7 +82,7 @@ if($check_only) {
 	} else {
 		echo "Database up-to-date\n";
 	}
-	exit($count);
+	exit($count > 0 ? 1 : 0);
 }
 
 create_migration_table_if_not_exists();
@@ -178,7 +178,7 @@ function run_migration($version, $filename) {
 			ColorTerminal::set("red");
 			echo "$filename is empty. Migrations aborted\n";
 			ColorTerminal::set("normal");
-			exit;
+			exit(1);
 		}
 		switch($ext) {
 			case "php":
@@ -205,7 +205,7 @@ function run_migration($version, $filename) {
 				echo "All following migrations aborted\n";
 				$db->rollback();
 				ColorTerminal::set("normal");
-				exit;
+				exit(1);
 		}
 		//Add migration to schema_migrations:
 		run_sql("INSERT INTO `schema_migrations` (`version`) VALUES ('$version');");
@@ -233,7 +233,7 @@ function run_migration($version, $filename) {
 
 		run_hook("post_rollback", $filename);
 
-		exit;
+		exit(1);
 	}
 }
 
